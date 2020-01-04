@@ -251,6 +251,7 @@ SHA
 SHM
 SIGABRT
 SIGBUS
+SIGCHLD
 SIGFPE
 SIGILL
 SIGINT
@@ -1142,6 +1143,7 @@ vip
 virtualhost
 virtualize
 vptr
+waitpid
 wakeup
 wakeups
 websocket
