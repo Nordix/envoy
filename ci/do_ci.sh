@@ -88,6 +88,11 @@ function bazel_binary_build() {
   cp_binary_for_outside_access envoy
 
   cp_binary_for_image_build "${BINARY_TYPE}"
+
+  bazel build ${BAZEL_BUILD_OPTIONS} -c "${COMPILE_TYPE}" //source/restarter:restarter ${CONFIG_ARGS}
+  cp -f "${ENVOY_SRCDIR}"/bazel-bin/source/restarter/restarter "${ENVOY_DELIVERY_DIR}"/
+  cp -f "${ENVOY_DELIVERY_DIR}"/restarter "${ENVOY_SRCDIR}"/build_"$1"
+  strip "${ENVOY_DELIVERY_DIR}"/restarter -o "${ENVOY_SRCDIR}"/build_"$1"_stripped/restarter
 }
 
 CI_TARGET=$1
