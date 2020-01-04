@@ -239,6 +239,7 @@ SHA
 SHM
 SIGABRT
 SIGBUS
+SIGCHLD
 SIGFPE
 SIGILL
 SIGINT
@@ -1102,6 +1103,7 @@ viewable
 vip
 virtualhost
 vptr
+waitpid
 wakeup
 wakeups
 websocket

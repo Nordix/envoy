@@ -11,6 +11,7 @@ RUN apt-get update \
 RUN mkdir -p /etc/envoy
 
 ADD build_release_stripped/envoy /usr/local/bin/envoy
+ADD build_release_stripped/restarter /usr/local/bin/restarter
 ADD configs/google_com_proxy.v2.yaml /etc/envoy/envoy.yaml
 
 EXPOSE 10000
