@@ -269,6 +269,12 @@ EXTENSIONS = {
     #
 
     "envoy.http.stateful_header_formatters.preserve_case":       "//source/extensions/http/header_formatters/preserve_case:preserve_case_formatter",
+
+    #
+    # Access log formatter
+    #
+
+    "envoy.formatter.regex_substitute":                       "//source/extensions/formatter/regex_substitute:config",
 }
 
 # These can be changed to ["//visibility:public"], for  downstream builds which

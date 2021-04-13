@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package envoy.extensions.formatter.regex_substitute.v4alpha;
+
+import "envoy/type/matcher/v4alpha/regex.proto";
+
+import "udpa/annotations/status.proto";
+import "udpa/annotations/versioning.proto";
+
+option java_package = "io.envoyproxy.envoy.extensions.formatter.regex_substitute.v4alpha";
+option java_outer_classname = "RegexSubstituteProto";
+option java_multiple_files = true;
+option (udpa.annotations.file_status).package_version_status = NEXT_MAJOR_VERSION_CANDIDATE;
+
+// [#protodoc-title: Regex substitute access log formatter]
+// [#extension: envoy.formatter.regex_substitute]
+
+// Configuration for the regex substitute access log formatter.
+// See :ref:`regex substitute <config_access_log_formatter_regex_substitute>` configuration guide for more information.
+message RegexSubstituteConfig {
+  option (udpa.annotations.versioning).previous_message_type =
+      "envoy.extensions.formatter.regex_substitute.v3.RegexSubstituteConfig";
+
+  // Name for the access log command operator that is defined by this formatter.
+  string command_name = 1;
+
+  // Header's value will be matched and substituted with this.
+  // If there is no match or substitution, the header value is used as-is.
+  type.matcher.v4alpha.RegexMatchAndSubstitute regex_value_rewrite = 2;
+}

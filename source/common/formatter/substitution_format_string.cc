@@ -1,5 +1,6 @@
 #include "common/formatter/substitution_format_string.h"
 
+#include "common/protobuf/message_validator_impl.h"
 #include "envoy/api/api.h"
 
 #include "common/config/datasource.h"
@@ -26,7 +27,9 @@ FormatterPtr SubstitutionFormatStringUtils::fromProtoConfig(
     if (!factory) {
       throw EnvoyException(absl::StrCat("Formatter not found: ", formatter.name()));
     }
-    auto parser = factory->createCommandParserFromProto(formatter.typed_config());
+    auto typed_config = Envoy::Config::Utility::translateAnyToFactoryConfig(
+        formatter.typed_config(), Envoy::ProtobufMessage::getStrictValidationVisitor(), *factory);
+    auto parser = factory->createCommandParserFromProto(*typed_config);
     if (!parser) {
       throw EnvoyException(absl::StrCat("Failed to create command parser: ", formatter.name()));
     }

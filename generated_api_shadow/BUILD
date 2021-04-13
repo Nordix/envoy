@@ -241,6 +241,7 @@ proto_library(
         "//envoy/extensions/filters/network/zookeeper_proxy/v3:pkg",
         "//envoy/extensions/filters/udp/dns_filter/v3alpha:pkg",
         "//envoy/extensions/filters/udp/udp_proxy/v3:pkg",
+        "//envoy/extensions/formatter/regex_substitute/v3:pkg",
         "//envoy/extensions/health_checkers/redis/v3:pkg",
         "//envoy/extensions/http/header_formatters/preserve_case/v3:pkg",
         "//envoy/extensions/internal_redirect/allow_listed_routes/v3:pkg",
