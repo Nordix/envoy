@@ -119,6 +119,8 @@ void ConnectionHandlerImpl::addListener(absl::optional<uint64_t> overridden_list
         auto ipv4_any_listener = tcp_listener_map_by_address_.find(ipv4_any_address);
         if (ipv4_any_listener == tcp_listener_map_by_address_.end() ||
             ipv4_any_listener->second->listener_->listener() == nullptr) {
+          ENVOY_LOG(warn, "Inserting IPv4 any_addr {} with tag {}", ipv4_any_address,
+                    details->listener_tag_);
           tcp_listener_map_by_address_.insert_or_assign(ipv4_any_address, details);
         }
       } else {
@@ -146,16 +148,21 @@ void ConnectionHandlerImpl::removeListeners(uint64_t listener_tag) {
     // which find from listener_map_by_tag_, only delete it when it is same listener.
     auto& address = listener_iter->second->address_;
     auto address_view = address->asStringView();
+    ENVOY_LOG(warn, "Planning to remove listener with tag {} and address {}", listener_tag,
+              address_view);
     if (tcp_listener_map_by_address_.contains(address_view) &&
         tcp_listener_map_by_address_[address_view]->listener_tag_ ==
             listener_iter->second->listener_tag_) {
       tcp_listener_map_by_address_.erase(address_view);
-
+      ENVOY_LOG(warn, "Removed listener with address {} from tcp_listener_map_by_address", address_view);
       // If the address is Ipv6 and isn't v6only, delete the corresponding Ipv4 item from the map.
       if (address->type() == Network::Address::Type::Ip &&
           address->ip()->version() == Network::Address::IpVersion::v6 &&
           !address->ip()->ipv6()->v6only()) {
         if (address->ip()->isAnyAddress()) {
+          ENVOY_LOG(warn, "Listener is AnyAddress, IPv6 and is not IPv6 only");
+          ENVOY_LOG(warn, "Planning to remove related IPv4 item {}",
+                    Network::Address::Ipv4Instance(address->ip()->port()).asStringView());
           auto ipv4_any_addr_iter = tcp_listener_map_by_address_.find(
               Network::Address::Ipv4Instance(address->ip()->port()).asStringView());
           // Since both "::" with ipv4_compat and "0.0.0.0" can be supported, ensure they are same
@@ -163,15 +170,19 @@ void ConnectionHandlerImpl::removeListeners(uint64_t listener_tag) {
           if (ipv4_any_addr_iter != tcp_listener_map_by_address_.end() &&
               ipv4_any_addr_iter->second->listener_tag_ == listener_iter->second->listener_tag_) {
             tcp_listener_map_by_address_.erase(ipv4_any_addr_iter);
+            ENVOY_LOG(warn, "Remove related IPv4 item {}",
+                      Network::Address::Ipv4Instance(address->ip()->port()).asStringView());
           }
         } else {
           auto v4_compatible_addr = address->ip()->ipv6()->v4CompatibleAddress();
+          ENVOY_LOG(warn, "Listener is not AnyAddress");
           // Remove this check when runtime flag
           // `envoy.reloadable_features.strict_check_on_ipv4_compat` deprecated.
           if (v4_compatible_addr != nullptr) {
             // both "::FFFF:<ipv4-addr>" with ipv4_compat and "<ipv4-addr>" isn't valid case,
             // remove the v4 compatible addr item directly.
             tcp_listener_map_by_address_.erase(v4_compatible_addr->asStringView());
+            ENVOY_LOG(warn, "Removed v4-compatible address {}", v4_compatible_addr->asStringView());
           }
         }
       }
@@ -181,6 +192,7 @@ void ConnectionHandlerImpl::removeListeners(uint64_t listener_tag) {
       internal_listener_map_by_address_.erase(address_view);
     }
     listener_map_by_tag_.erase(listener_iter);
+    ENVOY_LOG(warn, "Listener with tag {} removed from listener_map_by_tag", listener_tag);
   }
 }
 
